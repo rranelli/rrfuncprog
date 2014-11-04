@@ -17,7 +17,7 @@ toDigits :: Integer -> [Integer]
 toDigits n = reverse (toDigitsRev n)
 
 -- ===================================
--- Ex. 2
+n-- Ex. 2
 -- ===================================
 evalRev :: [Integer] -> Integer
 evalRev xs = foldr (\x y-> x + (10 * y)) 0 xs
@@ -29,11 +29,10 @@ toDigitsRev n = [x `div` y | (x, y) <-  zip (powers n) tens]
 -- Ex. 3
 -- ===================================
 
-seconds :: [Integer] -> [Integer]
-seconds xs = [if even i then x else 0 | (x, i) <- xs `zip` [1..]]
-
 doubleSecond :: [Integer] -> [Integer]
-doubleSecond xs = [x + y | (x, y) <- zip xs (seconds xs)]
+doubleSecond [] = []
+doubleSecond [x] = [x]
+doubleSecond (x:x':xs) = x : (2 * x') : doubleSecond xs
 
 -- alright, this will not throw exceptions!
 sumDigits :: [Integer] -> Integer
@@ -44,7 +43,7 @@ sumDigits xs = sum (xs >>= toDigits)
 -- ===================================
 
 isValid :: Integer -> Bool
-isValid n = (sumDigits . doubleSecond . toDigits) n `mod` 10 == 0
+isValid n = (sumDigits . doubleSecond . toDigitsRev) n `mod` 10 == 0
 
 -- ===================================
 -- Ex. 5
