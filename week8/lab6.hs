@@ -102,18 +102,26 @@ ex13 = unSum (mappend (Sum 5) (Sum (unProduct (mappend (Product (unSum num2)) (m
 -- ===================================
 
 tree' = 1 :> [2 :> [], 3 :> [4 :> []]]
+tree'' = fmap Product tree'
 
 class Functor f => Foldable f where
   fold :: Monoid m => f m -> m
+  -- foldMap maps each member of the structore to a monoid, and then combine the results
   foldMap :: Monoid m => (a -> m) -> (f a -> m)
-  foldMap = error "why you be so hard"
+  foldMap = \mapper functor -> fold (fmap mapper functor)
 
 instance Foldable Rose where
-  fold = error "you have to implement fold for Rose"
+  fold = \rose -> case rose of
+                   val :> rs -> val `mappend` foldr mappend mempty (map fold rs)
+
+ex14 = unProduct $ fold tree''
 
 sumxs = Sum 0 :> [Sum 13 :> [Sum 26 :> [Sum (-31) :> [Sum (-45) :> [], Sum 23 :> []]]], Sum 27 :> [], Sum 9 :> [Sum 15 :> [Sum 3 :> [Sum (-113) :> []], Sum 1 :> []], Sum 71 :> [Sum 55 :> []]]]
 
 ex15 = unSum (mappend (mappend (fold sumxs) (mappend (fold . head . drop 2 . children $ sumxs) (Sum 30))) (fold . head . children $ sumxs))
+
+tree''' = 42 :> [3 :> [2:> [], 1 :> [0 :> []]]]
+ex16 = unSum $ foldMap Sum tree'''
 
 -- ===================================
 -- Ex. 16-18
@@ -128,7 +136,9 @@ ex18 = unSum (mappend (mappend (foldMap (\x -> Sum x) xs) (Sum (unProduct (mappe
 -- ===================================
 
 fproduct, fsum :: (Foldable f, Num a) => f a -> a
-fsum = error "you have to implement fsum"
-fproduct = error "you have to implement fproduct"
+fsum = \structure -> unSum $ foldMap (\x -> Sum x) structure
+fproduct = \structure -> unProduct $ foldMap (\x -> Product x) structure
 
+ex19 = fsum xs
+ex20 = fproduct xs
 ex21 = ((fsum . head . drop 1 . children $ xs) + (fproduct . head . children . head . children . head . drop 2 . children $ xs)) - (fsum . head . children . head . children $ xs)
