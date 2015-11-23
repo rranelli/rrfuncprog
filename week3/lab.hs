@@ -17,7 +17,7 @@ toDigits :: Integer -> [Integer]
 toDigits n = reverse (toDigitsRev n)
 
 -- ===================================
-n-- Ex. 2
+-- Ex. 2
 -- ===================================
 evalRev :: [Integer] -> Integer
 evalRev xs = foldr (\x y-> x + (10 * y)) 0 xs
